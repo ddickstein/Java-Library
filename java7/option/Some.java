@@ -1,7 +1,8 @@
 package library.java7.option;
 
-import library.java7.function.Function;
-import library.java7.function.Supplier;
+import library.function.Consumer;
+import library.function.Function;
+import library.function.Supplier;
 
 class Some<A> extends Option<A> {
   private A value;
@@ -39,6 +40,9 @@ class Some<A> extends Option<A> {
   public Option<A> filterNot(Function<A, Boolean> func) { return !func.apply(value) ? this : new None<A>(); }
 
   @Override
+  public void forEach(Consumer<A> func) { func.accept(value); }
+
+  @Override
   public <B> Option<B> map(Function<A, B> func) {
     B result = func.apply(value);
     return (result == null) ? new None<B>() : new Some<B>(result);
@@ -46,9 +50,6 @@ class Some<A> extends Option<A> {
 
   @Override
   public <B> Option<B> flatMap(Function<A, Option<B>> func) { return func.apply(value); }
-
-  @Override
-  public <B> B applyOrElse(Function<A, B> funcIfSome, Supplier<B> funcIfNone) { return funcIfSome.apply(value); }
 
   @Override
   public String toString() {

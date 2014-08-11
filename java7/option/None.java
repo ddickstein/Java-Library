@@ -1,7 +1,8 @@
 package library.java7.option;
 
-import library.java7.function.Function;
-import library.java7.function.Supplier;
+import library.function.Consumer;
+import library.function.Function;
+import library.function.Supplier;
 
 class None<A> extends Option<A> {
   @Override
@@ -35,13 +36,13 @@ class None<A> extends Option<A> {
   public Option<A> filterNot(Function<A, Boolean> func) { return this; }
 
   @Override
+  public void forEach(Consumer<A> func) {}
+
+  @Override
   public <B> Option<B> map(Function<A, B> func) { return new None<B>(); }
 
   @Override
   public <B> Option<B> flatMap(Function<A, Option<B>> func) { return new None<B>(); }
-
-  @Override
-  public <B> B applyOrElse(Function<A, B> funcIfSome, Supplier<B> funcIfNone) { return funcIfNone.get(); }
 
   @Override
   public String toString() {

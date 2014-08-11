@@ -3,7 +3,7 @@ package library.java7.option;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import library.java7.function.Supplier;
+import library.function.ExceptionalSupplier;
 
 public class Attempt {
   private List<Class<? extends Exception>> anticipatedExceptions;
@@ -16,22 +16,22 @@ public class Attempt {
     anticipatedExceptions.add(exception);
   }
 
-  public <A> Option<A> attempt(Supplier<A> func) {
+  public <A> Option<A> attempt(ExceptionalSupplier<A> func) {
     try {
-      return new Some<A>(func.get());
+      return Option.wrap(func.get());
     } catch (Exception e) {
       for (Class<? extends Exception> anticipatedException : anticipatedExceptions) {
         if (anticipatedException == e.getClass())
           return new None<A>();
       }
-      throw e;
+      throw new AttemptException(e);
     }
   }
 
   public static <A> Option<A> get(A[] arr, int index) {
     Attempt attempt = new Attempt();
     attempt.anticipate(ArrayIndexOutOfBoundsException.class);
-    return attempt.attempt(new Supplier<A>() {
+    return attempt.attempt(new ExceptionalSupplier<A>() {
       @Override
       public A get() { return arr[index]; }
     });
@@ -40,7 +40,7 @@ public class Attempt {
   public static <A> Option<A> get(List<A> list, int index) {
     Attempt attempt = new Attempt();
     attempt.anticipate(IndexOutOfBoundsException.class);
-    return attempt.attempt(new Supplier<A>() {
+    return attempt.attempt(new ExceptionalSupplier<A>() {
       @Override
       public A get() { return list.get(index); }
     });
@@ -53,9 +53,15 @@ public class Attempt {
   public static <A, B> Option<B> cast(A value, Class<B> toClass) {
     Attempt attempt = new Attempt();
     attempt.anticipate(ClassCastException.class);
-    return attempt.attempt(new Supplier<B>() {
+    return attempt.attempt(new ExceptionalSupplier<B>() {
       @Override
       public B get() { return toClass.cast(value); }
     });
+  }
+}
+
+class AttemptException extends RuntimeException {
+  public AttemptException(Exception e) {
+    super(e);
   }
 }

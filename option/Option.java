@@ -1,7 +1,9 @@
 package library.option;
 
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 public abstract class Option<A> {
   public abstract A getOrElse(A other);
@@ -14,9 +16,17 @@ public abstract class Option<A> {
   public abstract boolean isEmptyOr(Function<A, Boolean> func);
   public abstract Option<A> filter(Function<A, Boolean> func);
   public abstract Option<A> filterNot(Function<A, Boolean> func);
+  public abstract void forEach(Consumer<A> func);
   public abstract <B> Option<B> map(Function<A, B> func);
   public abstract <B> Option<B> flatMap(Function<A, Option<B>> func);
-  public abstract <B> B applyOrElse(Function<A, B> funcIfSome, Supplier<B> funcIfNone);
+  
+  public <B> B applyOrElse(Function<A, B> funcIfSome, Supplier<B> funcIfNone) {
+    return map(funcIfSome).getOrElse(funcIfNone);
+  }
+
+  public Stream<A> toStream() {
+    return applyOrElse(Stream::of, Stream::empty);
+  }
 
   public static <A> Option<A> wrap(A value) {
     return (value == null) ? new None<A>() : new Some<A>(value);

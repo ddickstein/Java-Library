@@ -1,7 +1,8 @@
 package library.java7.option;
 
-import library.java7.function.Function;
-import library.java7.function.Supplier;
+import library.function.Consumer;
+import library.function.Function;
+import library.function.Supplier;
 
 public abstract class Option<A> {
   public abstract A getOrElse(A other);
@@ -14,9 +15,13 @@ public abstract class Option<A> {
   public abstract boolean isEmptyOr(Function<A, Boolean> func);
   public abstract Option<A> filter(Function<A, Boolean> func);
   public abstract Option<A> filterNot(Function<A, Boolean> func);
+  public abstract void forEach(Consumer<A> func);
   public abstract <B> Option<B> map(Function<A, B> func);
   public abstract <B> Option<B> flatMap(Function<A, Option<B>> func);
-  public abstract <B> B applyOrElse(Function<A, B> funcIfSome, Supplier<B> funcIfNone);
+  
+  public <B> B applyOrElse(Function<A, B> funcIfSome, Supplier<B> funcIfNone) {
+    return map(funcIfSome).getOrElse(funcIfNone);
+  }
 
   public static <A> Option<A> wrap(A value) {
     return (value == null) ? new None<A>() : new Some<A>(value);
