@@ -1,12 +1,14 @@
 // Copyright (c) 2014 Daniel S. Dickstein
 
-package library.java7.option;
+package library.java8.option;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import library.java7.function.ExceptionalBlock;
-import library.java7.function.ExceptionalSupplier;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
+import library.java8.function.ExceptionalBlock;
+import library.java8.function.ExceptionalSupplier;
 
 public class Attempt {
   private List<Class<? extends Exception>> anticipatedExceptions;
@@ -32,28 +34,19 @@ public class Attempt {
   }
 
   public Option<Boolean> attempt(ExceptionalBlock block) {
-    return attempt(new ExceptionalSupplier<Boolean>() {
-      @Override
-      public Boolean get() throws Exception { block.execute(); return true; }
-    });
+    return attempt(() -> { block.execute(); return true; });
   }
 
   public static <A> Option<A> get(A[] arr, int index) {
     Attempt attempt = new Attempt();
     attempt.anticipate(ArrayIndexOutOfBoundsException.class);
-    return attempt.attempt(new ExceptionalSupplier<A>() {
-      @Override
-      public A get() { return arr[index]; }
-    });
+    return attempt.attempt(() -> arr[index]);
   }
 
   public static <A> Option<A> get(List<A> list, int index) {
     Attempt attempt = new Attempt();
     attempt.anticipate(IndexOutOfBoundsException.class);
-    return attempt.attempt(new ExceptionalSupplier<A>() {
-      @Override
-      public A get() { return list.get(index); }
-    });
+    return attempt.attempt(() -> list.get(index));
   }
 
   public static <A, B> Option<B> get(Map<A, B> map, A key) {
@@ -63,10 +56,7 @@ public class Attempt {
   public static <A, B> Option<B> cast(A value, Class<B> toClass) {
     Attempt attempt = new Attempt();
     attempt.anticipate(ClassCastException.class);
-    return attempt.attempt(new ExceptionalSupplier<B>() {
-      @Override
-      public B get() { return toClass.cast(value); }
-    });
+    return attempt.attempt(() -> toClass.cast(value));
   }
 }
 

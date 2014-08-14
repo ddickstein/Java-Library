@@ -1,11 +1,11 @@
 // Copyright (c) 2014 Daniel S. Dickstein
 
-package library.java7.option;
+package library.java8.option;
 
-import library.java7.function.Block;
-import library.java7.function.Consumer;
-import library.java7.function.Function;
-import library.java7.function.Supplier;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import library.java8.function.Block;
 
 class None<A> extends Option<A> {
   @Override

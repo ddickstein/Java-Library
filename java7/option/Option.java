@@ -1,21 +1,25 @@
+// Copyright (c) 2014 Daniel S. Dickstein
+
 package library.java7.option;
 
-import library.function.Consumer;
-import library.function.Function;
-import library.function.Supplier;
+import library.java7.function.Block;
+import library.java7.function.Consumer;
+import library.java7.function.Function;
+import library.java7.function.Supplier;
 
 public abstract class Option<A> {
   public abstract A getOrElse(A other);
   public abstract A getOrElse(Supplier<A> other);
-  public abstract Option<? super A> orElse(Option<? super A> otherOption);
-  public abstract Option<? super A> orElse(Supplier<Option<? super A>> otherOption);
+  public abstract Option<A> orElse(Option<A> otherOption);
+  public abstract Option<A> orElse(Supplier<Option<A>> otherOption);
   public abstract boolean isDefined();
   public abstract boolean isEmpty();
   public abstract boolean isDefinedAnd(Function<A, Boolean> func);
   public abstract boolean isEmptyOr(Function<A, Boolean> func);
   public abstract Option<A> filter(Function<A, Boolean> func);
   public abstract Option<A> filterNot(Function<A, Boolean> func);
-  public abstract void forEach(Consumer<A> func);
+  public abstract Option<A> doIfDefined(Consumer<A> func);
+  public abstract Option<A> doIfEmpty(Block func);
   public abstract <B> Option<B> map(Function<A, B> func);
   public abstract <B> Option<B> flatMap(Function<A, Option<B>> func);
   
