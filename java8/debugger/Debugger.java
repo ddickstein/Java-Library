@@ -31,7 +31,7 @@ public class Debugger {
     encounters = new ArrayList<>();
   }
 
-  public Object log(Object unsafeObj, String unsafeName) {
+  public <A> A log(A unsafeObj, String unsafeName) {
     Option.wrap(unsafeName).doIfDefined(name -> {
       String value = Option.wrap(unsafeObj).map(obj -> obj.toString()).getOrElse("null");
       encounterMap.entrySet().stream().forEach(entry -> {
